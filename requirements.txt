@@ -1,0 +1,9 @@
+streamlit
+requests
+pathlib
+google-api-python-client
+google-auth-oauthlib
+google-auth
+logging
+python-dotenv
+openai
