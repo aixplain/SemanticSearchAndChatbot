@@ -1,6 +1,14 @@
 import streamlit as st
 from ingestor_api import query
 from utils import parse_search_response
+import os
+import openai
+from dotenv import load_dotenv
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent.parent
+load_dotenv(os.path.join(BASE_DIR, "secrets.env"), override=True)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 st.set_page_config(page_title="RAG DEMO")
 
@@ -44,3 +52,26 @@ if SearchButton:
     st.write(f"**Summary of the top results:** {summary}")
     st.write("Done!")
     
+
+    st.write(f"**Answer:**")
+    chunks = ""
+    content_chunks=5
+    for i, chunk in enumerate(st.session_state["files"][:content_chunks]):
+        chunks += f"Document {i+1}:\r\n\r\nfile_name:\r\n\r\n" + chunk["file_name"] + "\r\n\r\n" + "file_url:\r\n\r\n" + chunk["file_url"] + chunk["text"] + "\r\n\r\n"
+
+    search_prompts = f"""
+        Question: {question}
+        Use only the following document chunks to answer the question:
+        **{chunks}**
+        Only if any of the documents above was used in your response, specify the file_name and file_url (if exists) at the end of your response as reference in seprate lines with following format:
+        Reference:\n
+        file_name (file_url)
+        if none of the documnets were used do not include the reference.
+        do not show repeated reference if they are the same.
+        Answer:
+        """
+    st.session_state.messages.append({"role": "system", "content": search_prompts})
+
+    response = openai.ChatCompletion.create(model="gpt-4", messages=st.session_state.messages)
+    msg = response.choices[0].message.content
+    st.write(msg)
