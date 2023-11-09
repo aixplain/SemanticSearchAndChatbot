@@ -1,0 +1,5 @@
+UPLOAD_URL = "https://api.vectara.io/v1/upload"
+QUERY_URL = "https://api.vectara.io/v1/query"
+OAUTH_URL = "https://vectara-prod-586060537.auth.us-west-2.amazoncognito.com/oauth2/token"
+CREATE_CORPUS_URL = "https://api.vectara.io/v1/create-corpus"
+RESET_CORPUS_URL = "https://api.vectara.io/v1/reset-corpus"
